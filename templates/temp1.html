@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        input { display: block; }
+        #messages { 
+            list-style: none; 
+            padding: 0;
+        }
+        #messages li {
+            padding: 12px 8px 12px 3px;
+            border-bottom: 1px solid lightgray;
+            font-size: 0.9rem;
+            color: #3c3c3c;
+        }
+        #messages li:first-of-type {
+            border-top: 1px solid lightgray;
+        }
+        .wrapper {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            height: 100%;
+        }
+
+        #chatbox textarea {
+            width: 100%;
+            outline: none;
+            border: 1px solid lightgray;
+            border-radius: 3px;
+            padding: 12px;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+            min-height: 150px;
+        }
+
+        input.submit {
+            border: none;
+            background-color: #73b9da;
+            color: #fff;
+            width: 200px;
+            padding: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0px 3px 5px -1px lightgray;
+            float: right;
+            transition: opacity 0.2s, box-shadow 0.2s, transform 0.2s;
+            outline: none;
+        }
+
+        input.submit:hover {
+            opacity: 0.8;
+        }
+
+        input.submit:active {
+            box-shadow: 0px 11px 5px -1px lightgray;
+            transition: all 0.2s;
+            transform: translateY(-3px);
+        }
+    </style>
+    <title>go chat</title>
+</head>
+<body>
+    <div class="wrapper">
+        <ul id="messages">
+            <li>sample chat</li>
+        </ul>
+        <form id="chatbox" action="">
+            <textarea id="" name="" cols="30" rows="10"></textarea>
+            <input type="submit" value="送信" class="submit">
+        </form>
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var socket = null;
+            var msgBox = $('#chatbox textarea');
+            var messages = $('#messages');
+
+            $('#chatbox').submit(function(){
+                if ( !msgBox.val() ) return false;
+                if ( !socket ){
+                    alert('websocketと接続がありません');
+                    return false;
+                }
+                socket.send(msgBox.val());
+                msgBox.val("")
+                return false;
+            });
+
+            if ( !window["WebSocket"] ){
+                alert('websocketに対応していません...');
+            } else {
+                socket = new WebSocket("ws://{{.Host}}/room"); // templateに渡したrのr.Hostを取得する
+                socket.onclose = function(){
+                    alert('接続終了！');
+                }
+                socket.onmessage = function(e){
+                    messages.append($("<li>").text(e.data));
+                }
+            }
+        })
+    </script>
+</body>
+</html>
