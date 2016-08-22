@@ -31,11 +31,19 @@ func main() {
 	// 起動時に ./chan -addr=":3000"などと渡せる
 	var addr = flag.String("addr", ":8080", "アプリのアドレス") // key, default, desc
 	flag.Parse()
+
 	// routeにたいし、viewを返している
 	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){w.Write([]byte(`<html>`))})
 	http.Handle("/", &templateHandler{filename: "temp1.html"})
 
+	http.Handle("/about", &templateHandler{filename: "about.html"})
+
+	// 		     request					  requestからprefixを取り除く         assetsまでのパス
+	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("./assets"))))
+
 	r := newRoom()
+	// /roomへのリクエストはrが受け取る。
+	// rは無限ループでr.join, r.leave, r.clientsをずっと監視している
 	http.Handle("/room", r)
 	go r.run()
 

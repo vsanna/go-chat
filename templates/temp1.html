@@ -13,6 +13,8 @@
             border-bottom: 1px solid lightgray;
             font-size: 0.9rem;
             color: #3c3c3c;
+            white-space: pre-line;
+            word-break: break-all;
         }
         #messages li:first-of-type {
             border-top: 1px solid lightgray;
@@ -71,7 +73,7 @@
         </form>
     </div>
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="/assets/jquery.min.js"></script>
     <script type="text/javascript">
         $(function(){
             var socket = null;
@@ -93,9 +95,7 @@
                 alert('websocketに対応していません...');
             } else {
                 socket = new WebSocket("ws://{{.Host}}/room"); // templateに渡したrのr.Hostを取得する
-                socket.onclose = function(){
-                    alert('接続終了！');
-                }
+                socket.onclose = function(){} // 接続終了した際の処理
                 socket.onmessage = function(e){
                     messages.append($("<li>").text(e.data));
                 }
